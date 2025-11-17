@@ -9,13 +9,17 @@ import com.example.tasktrackerandriod.viewmodel.TaskViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.navigation.NavController
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskEditScreen(
     taskId: Int,
+    navController: NavController,
     viewModel: TaskViewModel,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     // Fetch the task details based on the taskId
     val task = viewModel.tasks.find { it.id == taskId }

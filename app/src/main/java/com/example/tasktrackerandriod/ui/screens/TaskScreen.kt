@@ -58,7 +58,7 @@ fun TaskScreen(viewModel: TaskViewModel, modifier: Modifier) {
                     TaskItem(
                         task = task,
                         onToggle = { viewModel.toggleTaskComplete(task.id) },
-                        onClickEdit = { onNavigateToEdit.editTask(task.id) },
+                        onClickEdit = { viewModel.editTask(task.id, newTaskTitle) },
                         onClickDelete = { viewModel.deleteTask(task.id) }
                     )
                 }
@@ -66,6 +66,8 @@ fun TaskScreen(viewModel: TaskViewModel, modifier: Modifier) {
         }
     }
 }
+
+
 
 @Composable
 fun TaskItem(task: Task) {

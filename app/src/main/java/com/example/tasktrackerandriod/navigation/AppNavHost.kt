@@ -20,7 +20,7 @@ fun AppNavHost(
         composable(Routes.TASK_LIST) {
             TaskScreen(
                 viewModel = viewModel,
-                onEditTask = { taskId ->
+                editTask = { taskId ->
                     navController.navigate("task_edit/$taskId")
                 }
             )

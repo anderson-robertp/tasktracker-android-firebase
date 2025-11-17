@@ -21,6 +21,7 @@ fun TaskItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
+            .clickable { onClickEdit() }
     ) {
         Row(
             modifier = Modifier
