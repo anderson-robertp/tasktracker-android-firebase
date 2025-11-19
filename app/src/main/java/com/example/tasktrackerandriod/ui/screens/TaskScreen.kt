@@ -1,9 +1,7 @@
 package com.example.tasktrackerandriod.ui.screens
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -20,10 +18,8 @@ fun TaskScreen(
     deleteTask: (int: Int) -> Unit,
     modifier: Modifier = Modifier
     ) {
-    val tasks = viewModel.tasks
+    val tasks by viewModel.tasks.collectAsState()
     var newTaskTitle by remember { mutableStateOf("") }
-
-    val updateTaskTitle: (String) -> Unit = { newTaskTitle = it }
 
     val onAddTaskClick: () -> Unit = {
         if (newTaskTitle.isNotEmpty()) {
@@ -61,7 +57,7 @@ fun TaskScreen(
             )
 
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(viewModel.tasks) { task ->
+                items(tasks) { task ->
                     TaskItem(
                         task = task,
                         onToggle = { viewModel.toggleTaskComplete(task.id) },

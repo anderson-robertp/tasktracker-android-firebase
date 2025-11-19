@@ -1,18 +1,28 @@
 package com.example.tasktrackerandriod.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.tasktrackerandriod.viewmodel.TaskViewModel
+import com.example.tasktrackerandriod.data.model.Task
 import com.example.tasktrackerandriod.ui.screens.TaskItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskListScreen(viewModel: TaskViewModel) {
+fun TaskListScreen(
+    viewModel: TaskViewModel,
+    modifier: Modifier = Modifier,
+    navController: NavController
+) {
 
+    val tasks by viewModel.tasks.collectAsState()
     var newTaskTitle by remember { mutableStateOf("") }
+
     val onAddTaskClick: () -> Unit = {
         if (newTaskTitle.isNotEmpty()) {
             viewModel.addTask(newTaskTitle)
@@ -42,15 +52,15 @@ fun TaskListScreen(viewModel: TaskViewModel) {
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            viewModel.tasks.forEach { task ->
-                TaskItem(
-                    task = task,
-                    onToggle = { viewModel.toggleTaskComplete(task.id) },
-                    onClickEdit = { viewModel.editTask(task.id, newTaskTitle) },
-                    onClickDelete = { viewModel.deleteTask(task.id) }
-                )
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(tasks) { task ->
+                    TaskItem(
+                        task = task,
+                        onToggle = { viewModel.toggleTaskComplete(task.id) },
+                        onClickEdit = { viewModel.editTask(task.id, newTaskTitle) },
+                        onClickDelete = { viewModel.deleteTask(task.id) }
+                    )
+                }
             }
         }
     }

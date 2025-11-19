@@ -1,58 +1,72 @@
 package com.example.tasktrackerandriod.viewmodel
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.tasktrackerandriod.data.TaskDataStore
+import com.example.tasktrackerandriod.data.taskDataStore
 import com.example.tasktrackerandriod.data.model.Task
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import android.content.Context
+import com.example.tasktrackerandriod.data.protoTaskDataStore
+import kotlinx.coroutines.flow.MutableStateFlow
 
-class TaskViewModel : ViewModel() {
+class TaskViewModel(context: Context) : ViewModel() {
+     private val dataStore: TaskDataStore = context.protoTaskDataStore
 
-    private var nextId = 5
-    private val _tasks = mutableStateListOf<Task>()
+    private val _tasks = MutableStateFlow<List<Task>>(emptyList())
 
-    val tasks: List<Task> = _tasks
+    val tasks: StateFlow<List<Task>> = _tasks
+
+    private var nextId: Int = 1
 
     init {
-        // Add sample data
-        _tasks.addAll(
-            listOf(
-                Task(1,"Buy groceries"),
-                Task(2,"Finish Kotlin project"),
-                Task(3,"Read a book", isCompleted = true),
-                Task(4,"Walk the dog")
-            )
-        )
+        viewModelScope.launch {
+            dataStore.tasksFlow.collect { loaded ->
+                _tasks.value = loaded
+                nextId = loaded.maxOfOrNull { it.id }?.plus(1) ?: 1
+            }
+
+        }
+
     }
 
-    fun addTask(title: String) {
-        if (title.isNotBlank()) {
-            _tasks.add(Task(nextId++, title))
+    private fun updateTasks(tasks: List<Task>) {
+        _tasks.value = tasks
+        viewModelScope.launch {
+            dataStore.saveTasks(tasks)
         }
+    }
+
+
+
+
+    fun addTask(title: String) {
+        val newId = (tasks.value.maxOfOrNull { it.id } ?: 0) + 1
+        val newTask = Task(id = newId, title = title)
+        updateTasks(tasks.value + newTask)
     }
 
     fun toggleTaskComplete(id: Int) {
-        val task = tasks.find { it.id == id }
-        task?.isCompleted = !(task.isCompleted)
-    }
-
-    /*fun updateTask(id: Int, newTitle: String) {
-        val task = tasks.find { it.id == id }
-        if (task != null) {
-            task.title = newTitle
+        val updated = tasks.value.map {
+            if (it.id == id) it.copy(isCompleted = !it.isCompleted)
+            else it
         }
-    }*/
-
-    fun loadTasks(): List<Task> {
-        return _tasks
+        updateTasks(updated)
     }
 
     fun editTask(id: Int, newTitle: String) {
-        val task = _tasks.find { it.id == id }
-        if (task != null) {
-            task.title = newTitle
+        // FIX 1.1: Use a different variable name ('updatedTasks')
+        val updatedTasks = tasks.value.map {
+            if (it.id == id) it.copy(title = newTitle)
+            else it
         }
+        // FIX 1.2: Pass the correct variable to 'saveTasks'
+        updateTasks(updatedTasks)
     }
 
     fun deleteTask(id: Int) {
-        _tasks.removeAll { it.id == id }
+        val remainingTasks = tasks.value.filterNot { it.id == id }
+        updateTasks(remainingTasks)
     }
 }

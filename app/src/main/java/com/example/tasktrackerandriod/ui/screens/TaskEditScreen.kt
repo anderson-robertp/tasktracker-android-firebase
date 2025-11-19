@@ -22,7 +22,7 @@ fun TaskEditScreen(
     modifier: Modifier = Modifier
 ) {
     // Fetch the task details based on the taskId
-    val task = viewModel.tasks.find { it.id == taskId }
+    val task = viewModel.tasks.collectAsState().value.find { it.id == taskId }
 
     if (task == null) {
         Text("Task not found.")
@@ -91,7 +91,8 @@ fun TaskEditScreen(
 
             Button(
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError
                 ),
                 onClick = {
                     viewModel.deleteTask(taskId)

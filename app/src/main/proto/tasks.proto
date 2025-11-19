@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option java_package = "com.example.tasktrackerandriod";
+option java_multiple_files = true;
+
+message TaskProto {
+  int32 id = 1;
+  string title = 2;
+  bool is_completed = 3;
+}
+
+message TaskList {
+  repeated TaskProto tasks = 1;
+}
