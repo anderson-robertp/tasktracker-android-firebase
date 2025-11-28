@@ -1,4 +1,4 @@
-package com.example.tasktrackerandriod.data.remote
+package com.example.tasktrackerandriod.data
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.tasktrackerandriod.data.model.Task

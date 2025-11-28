@@ -1,12 +1,9 @@
-
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.protobuf") version "0.9.5"
     id("com.google.gms.google-services")
-
 }
 
 android {
@@ -19,7 +16,6 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -32,6 +28,7 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -39,6 +36,7 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
     }
@@ -46,42 +44,48 @@ android {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.25.2"
+        // Match protoc with javalite-compatible version
+        artifact = "com.google.protobuf:protoc:3.25.5"
     }
 
-    // This is now the standard way to configure code generation
     generateProtoTasks {
         all().forEach { task ->
-            // Use the kotlin generator instead of the java one for .proto files
             task.builtins {
-                // Clear the default 'java' generator
+                // Use the Java generator (correct for javalite + DataStore)
                 clear()
-                // Add the kotlin generator
-                create("java")
+                create("java") {
+                    option("lite")
+                }
             }
         }
     }
 }
 
 dependencies {
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation(libs.firebase.firestore.ktx)
+
+    // Android + Compose
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
-    implementation("com.google.firebase:firebase-analytics")
-
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.material3:material3")
-
-    implementation("androidx.datastore:datastore:1.1.1")
-    implementation("com.google.protobuf:protobuf-java:3.22.2")
-
     implementation("androidx.navigation:navigation-compose:2.9.6")
 
+    // DataStore Proto (requires javalite)
+    implementation("androidx.datastore:datastore:1.2.0")
+    implementation("com.google.protobuf:protobuf-javalite:3.25.5")
+
+
+    // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -89,7 +93,10 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+}
 
-
-
+// Fix protobuf conflicts with Firebase
+configurations.all {
+    exclude(group = "com.google.protobuf", module = "protobuf-java")
+    exclude(group = "com.google.protobuf", module = "protobuf-lite")
 }

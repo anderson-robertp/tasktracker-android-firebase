@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import com.example.tasktrackerandriod.data.remote.FirebaseTaskService
+import com.example.tasktrackerandriod.data.FirebaseTaskService
 
 
 

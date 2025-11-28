@@ -14,3 +14,7 @@
 .cxx
 local.properties
 google-services.json
+*.apk
+*.aab
+*.pb
+*.proto
