@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import com.example.tasktrackerandriod.data.remote.FirebaseTaskService
+
 
 
 /**
@@ -28,6 +30,8 @@ class TaskViewModel(app: Application) : AndroidViewModel(app) {
     val tasks: StateFlow<List<Task>> = _tasks
     // Counter for generating unique task IDs
     private var nextId: Int = 1
+    // Firebase
+    private val remote = FirebaseTaskService()
 
     /**
      * The init block is executed when the ViewModel is first created.
@@ -40,7 +44,10 @@ class TaskViewModel(app: Application) : AndroidViewModel(app) {
                 _tasks.value = loaded
                 nextId = loaded.maxOfOrNull { it.id }?.plus(1) ?: 1
             }
-
+            val tasks = remote.getAllTasks()
+            if (tasks.isNotEmpty()) {
+                updateTasks(tasks)
+            }
         }
 
     }
@@ -68,6 +75,10 @@ class TaskViewModel(app: Application) : AndroidViewModel(app) {
         val newId = (tasks.value.maxOfOrNull { it.id } ?: 0) + 1
         val newTask = Task(id = newId, title = title)
         updateTasks(tasks.value + newTask)
+
+        viewModelScope.launch {
+            remote.uploadTask(newTask)
+        }
     }
 
     /**
@@ -77,7 +88,13 @@ class TaskViewModel(app: Application) : AndroidViewModel(app) {
      */
     fun toggleTaskComplete(id: Int) {
         val updated = tasks.value.map {
-            if (it.id == id) it.copy(isCompleted = !it.isCompleted)
+            if (it.id == id) {
+                val updatedTask = it.copy(isCompleted = !it.isCompleted)
+                viewModelScope.launch {
+                    remote.updateTask(updatedTask)
+                }
+                updatedTask
+            }
             else it
         }
         updateTasks(updated)
@@ -92,7 +109,13 @@ class TaskViewModel(app: Application) : AndroidViewModel(app) {
     fun editTask(id: Int, newTitle: String) {
         // FIX 1.1: Use a different variable name ('updatedTasks')
         val updatedTasks = tasks.value.map {
-            if (it.id == id) it.copy(title = newTitle)
+            if (it.id == id) {
+                val updatedTask = it.copy(title = newTitle)
+                viewModelScope.launch {
+                    remote.updateTask(updatedTask)
+                }
+                updatedTask
+            }
             else it
         }
         // FIX 1.2: Pass the correct variable to 'saveTasks'
@@ -107,5 +130,8 @@ class TaskViewModel(app: Application) : AndroidViewModel(app) {
     fun deleteTask(id: Int) {
         val remainingTasks = tasks.value.filterNot { it.id == id }
         updateTasks(remainingTasks)
+        viewModelScope.launch {
+            remote.deleteTask(id)
+        }
     }
 }
