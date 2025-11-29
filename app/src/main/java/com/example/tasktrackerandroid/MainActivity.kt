@@ -1,4 +1,4 @@
-package com.example.tasktrackerandriod
+package com.example.tasktrackerandroid
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -6,18 +6,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.tasktrackerandriod.ui.screens.TaskScreen
-import com.example.tasktrackerandriod.ui.theme.TaskTrackerAndriodV2Theme
-import com.example.tasktrackerandriod.viewmodel.TaskViewModel
+import com.example.tasktrackerandroid.ui.theme.TaskTrackerAndroidV2Theme
+import com.example.tasktrackerandroid.viewmodel.TaskViewModel
 import androidx.navigation.compose.rememberNavController
-import com.example.tasktrackerandriod.navigation.AppNavHost
+import com.example.tasktrackerandroid.navigation.AppNavHost
 
 /**
  * The main and only activity in this single-activity architecture application.
@@ -43,7 +40,7 @@ class MainActivity : ComponentActivity() {
         // Sets the content of the activity using Jetpack Compose.
         setContent {
             // The main theme for the app.
-            TaskTrackerAndriodV2Theme {
+            TaskTrackerAndroidV2Theme {
                 // A surface container using the 'background' color from the theme.
                 Surface(
                         modifier = Modifier.fillMaxSize(),
@@ -80,7 +77,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    TaskTrackerAndriodV2Theme {
+    TaskTrackerAndroidV2Theme {
         Greeting("Android")
     }
 }

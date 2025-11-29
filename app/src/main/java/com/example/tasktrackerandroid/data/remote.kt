@@ -1,7 +1,7 @@
-package com.example.tasktrackerandriod.data
+package com.example.tasktrackerandroid.data
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.example.tasktrackerandriod.data.model.Task
+import com.example.tasktrackerandroid.data.model.Task
 import kotlinx.coroutines.tasks.await
 
 class FirebaseTaskService {

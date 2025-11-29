@@ -1,4 +1,4 @@
-package com.example.tasktrackerandriod.ui.screens
+package com.example.tasktrackerandroid.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,7 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.tasktrackerandriod.viewmodel.TaskViewModel
+import com.example.tasktrackerandroid.viewmodel.TaskViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

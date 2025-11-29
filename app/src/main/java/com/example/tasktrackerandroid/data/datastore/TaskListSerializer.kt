@@ -1,7 +1,7 @@
-package com.example.tasktrackerandriod.data.datastore
+package com.example.tasktrackerandroid.data.datastore
 
 import androidx.datastore.core.Serializer
-import com.example.tasktrackerandriod.TaskList
+import com.example.tasktrackerandroid.TaskList
 import java.io.InputStream
 import java.io.OutputStream
 

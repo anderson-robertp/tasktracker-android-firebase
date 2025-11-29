@@ -1,4 +1,4 @@
-package com.example.tasktrackerandriod.ui.theme
+package com.example.tasktrackerandroid.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

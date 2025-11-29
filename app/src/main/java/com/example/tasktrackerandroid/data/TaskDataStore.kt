@@ -1,13 +1,13 @@
-package com.example.tasktrackerandriod.data
+package com.example.tasktrackerandroid.data
 
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
-import com.example.tasktrackerandriod.TaskList
-import com.example.tasktrackerandriod.TaskProto
-import com.example.tasktrackerandriod.data.datastore.TaskListSerializer
-import com.example.tasktrackerandriod.data.model.Task
+import com.example.tasktrackerandroid.TaskList
+import com.example.tasktrackerandroid.TaskProto
+import com.example.tasktrackerandroid.data.datastore.TaskListSerializer
+import com.example.tasktrackerandroid.data.model.Task
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.tasktrackerandriod"
+    namespace = "com.example.tasktrackerandroid"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.tasktrackerandriod"
+        applicationId = "com.example.tasktrackerandroid"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

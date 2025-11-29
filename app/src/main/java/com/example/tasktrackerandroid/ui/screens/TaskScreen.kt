@@ -1,4 +1,4 @@
-package com.example.tasktrackerandriod.ui.screens
+package com.example.tasktrackerandroid.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -7,8 +7,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.tasktrackerandriod.data.model.Task
-import com.example.tasktrackerandriod.viewmodel.TaskViewModel
+import com.example.tasktrackerandroid.data.model.Task
+import com.example.tasktrackerandroid.viewmodel.TaskViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,7 +83,7 @@ fun TaskItem(task: Task) {
             .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(task.title)
+        task.title?.let { Text(it) }
         Checkbox(
             checked = task.isCompleted,
             onCheckedChange = { task.isCompleted = it }

@@ -1,4 +1,4 @@
-package com.example.tasktrackerandriod.ui.screens
+package com.example.tasktrackerandroid.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.clickable
@@ -8,7 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.tasktrackerandriod.data.model.Task
+import com.example.tasktrackerandroid.data.model.Task
 
 /**
  * A composable that displays a single task item in a list.
@@ -42,10 +42,12 @@ fun TaskItem(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             // A text that displays the task title.
-            Text(
-                text = if (task.isCompleted) "✔ ${task.title}" else task.title,
-                modifier = Modifier.clickable { onClickEdit() }
-            )
+            if (task.isCompleted) "✔ ${task.title}" else task.title?.let {
+                Text(
+                    text = it,
+                    modifier = Modifier.clickable { onClickEdit() }
+                )
+            }
             // A row that contains the delete icon and a checkbox for completion.
             Row {
                 // A checkbox for completion.

@@ -1,15 +1,15 @@
-package com.example.tasktrackerandriod.viewmodel
+package com.example.tasktrackerandroid.viewmodel
 
 // Imports
 import android.app.Application
 import androidx.lifecycle.viewModelScope
-import com.example.tasktrackerandriod.data.TaskDataStore
-import com.example.tasktrackerandriod.data.model.Task
+import com.example.tasktrackerandroid.data.TaskDataStore
+import com.example.tasktrackerandroid.data.model.Task
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import com.example.tasktrackerandriod.data.FirebaseTaskService
+import com.example.tasktrackerandroid.data.FirebaseTaskService
 
 
 
@@ -106,7 +106,7 @@ class TaskViewModel(app: Application) : AndroidViewModel(app) {
      * @param id The unique ID of the task to edit.
      * @param newTitle The new title for the task.
      */
-    fun editTask(id: Int, newTitle: String) {
+    fun editTask(id: Int, newTitle: String?) {
         // FIX 1.1: Use a different variable name ('updatedTasks')
         val updatedTasks = tasks.value.map {
             if (it.id == id) {

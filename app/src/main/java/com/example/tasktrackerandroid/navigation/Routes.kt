@@ -1,4 +1,4 @@
-package com.example.tasktrackerandriod.navigation
+package com.example.tasktrackerandroid.navigation
 
 /**
  * A singleton object that centralizes all navigation routes used in the application.

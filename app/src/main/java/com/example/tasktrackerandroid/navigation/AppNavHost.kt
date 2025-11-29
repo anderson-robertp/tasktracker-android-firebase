@@ -1,12 +1,12 @@
-package com.example.tasktrackerandriod.navigation
+package com.example.tasktrackerandroid.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.tasktrackerandriod.viewmodel.TaskViewModel
-import com.example.tasktrackerandriod.ui.screens.TaskScreen
-import com.example.tasktrackerandriod.ui.screens.TaskEditScreen
+import com.example.tasktrackerandroid.viewmodel.TaskViewModel
+import com.example.tasktrackerandroid.ui.screens.TaskScreen
+import com.example.tasktrackerandroid.ui.screens.TaskEditScreen
 
 /**
  * The main navigation host for the application.

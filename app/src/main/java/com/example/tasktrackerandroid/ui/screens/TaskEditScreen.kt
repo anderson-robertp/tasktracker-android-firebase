@@ -1,11 +1,11 @@
-package com.example.tasktrackerandriod.ui.screens
+package com.example.tasktrackerandroid.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.tasktrackerandriod.viewmodel.TaskViewModel
+import com.example.tasktrackerandroid.viewmodel.TaskViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.navigation.NavController
@@ -66,13 +66,15 @@ fun TaskEditScreen(
                 .fillMaxSize()
         ) {
             // Text field for editing the task title
-            OutlinedTextField(
-                value = updatedTitle,
-                onValueChange = { updatedTitle = it },
-                label = { Text("Task Title") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
+            updatedTitle?.let { it1 ->
+                OutlinedTextField(
+                    value = it1,
+                    onValueChange = { updatedTitle = it },
+                    label = { Text("Task Title") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
             Spacer(modifier = Modifier.height(20.dp))
             // Checkbox to mark the task as completed
