@@ -11,6 +11,8 @@ activityCompose = "1.11.0"
 composeBom = "2024.09.00"
 navigationCompose = "2.9.6"
 protoliteWellKnownTypes = "18.0.0"
+firebaseAuthKtx = "24.0.1"
+firebasePerfKtx = "22.0.4"
 
 [libraries]
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
@@ -32,6 +34,8 @@ androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-
 androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 protolite-well-known-types = { module = "com.google.protobuf:protolite-well-known-types", version.ref = "protoliteWellKnownTypes" }
+firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
+firebase-perf-ktx = { group = "com.google.firebase", name = "firebase-perf-ktx", version.ref = "firebasePerfKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

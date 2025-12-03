@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import com.example.tasktrackerandroid.data.FirebaseTaskService
-
+import com.example.tasktrackerandroid.data.TaskRepositoryDB
 
 
 /**
@@ -21,7 +21,7 @@ import com.example.tasktrackerandroid.data.FirebaseTaskService
  *
  * @param app The application context, provided by the AndroidViewModel superclass.
  */
-class TaskViewModel(app: Application) : AndroidViewModel(app) {
+class TaskViewModel(app: Application, private val repository: TaskRepositoryDB) : AndroidViewModel(app) {
     // Private instance of the Datastore repository
     private val dataStore = TaskDataStore(app)
     // Mutable state flow for the list of tasks
@@ -39,6 +39,7 @@ class TaskViewModel(app: Application) : AndroidViewModel(app) {
      * and update the local UI state.
      */
     init {
+        repository.startSync()
         viewModelScope.launch {
             dataStore.tasksFlow.collect { loaded ->
                 _tasks.value = loaded

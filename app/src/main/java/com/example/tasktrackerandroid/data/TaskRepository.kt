@@ -29,7 +29,7 @@ val Context.taskDataStore: DataStore<TaskList> by dataStore(
     serializer = TaskPreferencesSerializer
 )
 
-class TaskRepository (
+class TaskRepositoryDB (
     private val db: FirebaseFirestore,
     private val dataStore: TaskDataStore
 ){

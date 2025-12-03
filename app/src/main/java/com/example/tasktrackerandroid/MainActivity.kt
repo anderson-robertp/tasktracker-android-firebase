@@ -15,6 +15,7 @@ import com.example.tasktrackerandroid.ui.theme.TaskTrackerAndroidV2Theme
 import com.example.tasktrackerandroid.viewmodel.TaskViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.tasktrackerandroid.navigation.AppNavHost
+import com.google.firebase.perf.session.SessionManager
 
 /**
  * The main and only activity in this single-activity architecture application.
@@ -80,4 +81,12 @@ fun GreetingPreview() {
     TaskTrackerAndroidV2Theme {
         Greeting("Android")
     }
+}
+
+@Composable
+fun TaskTrackerApp(sessionManager: SessionManager) {
+    val navController = rememberNavController()
+    val isLoggedIn by sessionManager.isLoggedIn.collectAsState(initial = false)
+
+    AppNavHost(navController, isLoggedIn)
 }

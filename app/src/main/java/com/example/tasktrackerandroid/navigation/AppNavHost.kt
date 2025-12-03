@@ -7,6 +7,14 @@ import androidx.navigation.compose.composable
 import com.example.tasktrackerandroid.viewmodel.TaskViewModel
 import com.example.tasktrackerandroid.ui.screens.TaskScreen
 import com.example.tasktrackerandroid.ui.screens.TaskEditScreen
+import com.example.tasktrackerandroid.ui.screens.TaskListScreen
+import com.example.tasktrackerandroid.ui.screens.LoginScreen
+import com.example.tasktrackerandroid.ui.screens.RegisterScreen
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.example.tasktrackerandroid.navigation.Routes
+import com.example.tasktrackerandroid.viewmodel.AuthViewModel
+
 
 /**
  * The main navigation host for the application.
@@ -21,48 +29,59 @@ import com.example.tasktrackerandroid.ui.screens.TaskEditScreen
 @Composable
 fun AppNavHost(
     navController: NavHostController,
-    viewModel: TaskViewModel
+    isLoggedIn: Boolean,
 ) {
-    // Define the navigation graph using NavHost.
     NavHost(
         navController = navController,
-        // Set the initial destination to the task list screen.
-        startDestination = Routes.TASK_LIST
+        startDestination = if (isLoggedIn) Routes.TASK_LIST else Routes.LOGIN
     ) {
-        // Define the route for the task list screen.
-        composable(Routes.TASK_LIST) {
-            // Call the TaskScreen composable, passing the necessary parameters.
-            TaskScreen(
-                viewModel = viewModel,
-                // Define the actions that can be performed on tasks.
-                // TaskScreen will call these actions when the user interacts with the tasks.
-                editTask = { taskId ->
-                    // Navigate to the task edit screen with the provided taskId.
-                    navController.navigate("task_edit/$taskId")
+        // ---------- AUTH ----------
+        composable(Routes.LOGIN) {
+            LoginScreen(
+                onLoginSuccess = {
+                    navController.navigate(Routes.TASK_LIST) {
+                        popUpTo(Routes.LOGIN) { inclusive = true }
+                    }
                 },
-                // Delete a task when the user requests it.
-                deleteTask = { taskId ->
-                    viewModel.deleteTask(taskId)
+                onRegisterClick = {
+                    navController.navigate(Routes.REGISTER)
                 }
             )
         }
-        // Define the route for the task edit screen.
-        // This screen is accessed when the user wants to edit an existing task.
-        composable("task_edit/{taskId}") { backStackEntry ->
-            // Retrieve the taskID from the navigation arguments.
-            // This is used to identify the task to be edited.
-            val id = backStackEntry.arguments?.getString("taskId")?.toInt() ?: 0
-            // Call the TaskEditScreen composable, passing the necessary parameters.
+
+        composable(Routes.REGISTER) {
+            RegisterScreen(
+                onRegisterSuccess = {
+                    navController.navigate(Routes.TASK_LIST) {
+                        popUpTo(Routes.LOGIN) { inclusive = true }
+                    }
+                },
+                onBackToLogin = { navController.popBackStack() }
+            )
+        }
+
+        // ---------- TASK LIST ----------
+        composable(Routes.TASK_LIST) {
+            TaskListScreen(
+                onAddTask = { navController.navigate(Routes.taskEditRoute(-1)) },
+                onTaskClick = { taskId ->
+                    navController.navigate(Routes.taskEditRoute(taskId))
+                }
+            )
+        }
+
+        // ---------- TASK EDIT ----------
+        composable(
+            route = Routes.TASK_EDIT,
+            arguments = listOf(navArgument("taskId") { type = NavType.IntType })
+        ) { entry ->
+            val taskId = entry.arguments!!.getInt("taskId")
+
             TaskEditScreen(
-                viewModel = viewModel,
-                taskId = id,
-                // Define the actions that can be performed on tasks.
-                // TaskEditScreen will call these actions when the user interacts with the tasks.
-                // navcontroller is used to navigate back to the task list screen.
-                navController = navController,
-                // A callback function that is called when the user clicks the back button.
-                // This will navigate back to the task list screen.
-                onNavigateBack = { navController.popBackStack() }
+                taskId = taskId,
+                onSave = {
+                    navController.popBackStack()
+                }
             )
         }
     }

@@ -83,6 +83,8 @@ dependencies {
     // DataStore Proto (requires javalite)
     implementation("androidx.datastore:datastore:1.2.0")
     implementation("com.google.protobuf:protobuf-javalite:3.25.5")
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.perf.ktx)
 
 
     // Tests
