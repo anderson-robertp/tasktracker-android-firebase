@@ -15,7 +15,8 @@ import com.example.tasktrackerandroid.viewmodel.TaskViewModel
 fun TaskListScreen(
     viewModel: TaskViewModel,
     modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController,
+    onLogout: () -> Unit
 ) {
 
     val tasks by viewModel.tasks.collectAsState()

@@ -4,6 +4,9 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.protobuf") version "0.9.5"
     id("com.google.gms.google-services")
+    kotlin("kapt")
+    id("dagger.hilt.android.plugin")
+    id("com.google.firebase.firebase-perf") version "2.0.2" apply false
 }
 
 android {
@@ -65,8 +68,31 @@ dependencies {
 
     // Firebase
     implementation(platform(libs.firebase.bom))
+    implementation("com.google.firebase:firebase-perf") {
+        exclude(group = "com.google.api.grpc", module = "proto-google-common-protos")
+        exclude (group = "com.google.firebase", module = "protolite-well-known-types")
+    }
     implementation("com.google.firebase:firebase-analytics")
-    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.firestore.ktx) {
+        exclude(group = "com.google.api.grpc", module = "proto-google-common-protos")
+        exclude(group = "com.google.protobuf", module = "protobuf-java")
+        exclude (group = "com.google.firebase", module = "protolite-well-known-types")
+    }
+    implementation("com.google.firebase:firebase-auth") {
+        exclude(group = "com.google.api.grpc", module = "proto-google-common-protos")
+        exclude (group = "com.google.firebase", module = "protolite-well-known-types")
+    }
+
+
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.57.2")
+    implementation(libs.androidx.compose.ui.text)
+    kapt("com.google.dagger:hilt-android-compiler:2.57.2")
+
+    // Hilt Compose
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+
+    implementation("com.google.api.grpc:proto-google-common-protos:2.40.0")
 
     // Android + Compose
     implementation(libs.androidx.core.ktx)
@@ -83,9 +109,6 @@ dependencies {
     // DataStore Proto (requires javalite)
     implementation("androidx.datastore:datastore:1.2.0")
     implementation("com.google.protobuf:protobuf-javalite:3.25.5")
-    implementation(libs.firebase.auth.ktx)
-    implementation(libs.firebase.perf.ktx)
-
 
     // Tests
     testImplementation(libs.junit)

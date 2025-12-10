@@ -12,11 +12,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.navigation.NavController
 import com.example.tasktrackerandroid.viewmodel.AuthViewModel
 import androidx.compose.ui.graphics.Color
+import androidx.hilt.navigation.compose.hiltViewModel
 
 
 @Composable
 fun LoginScreen(
-    viewModel: AuthViewModel,
+    navController: NavController,
+    viewModel: AuthViewModel = hiltViewModel(),
     onLoginSuccess: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()

@@ -13,6 +13,7 @@ navigationCompose = "2.9.6"
 protoliteWellKnownTypes = "18.0.0"
 firebaseAuthKtx = "24.0.1"
 firebasePerfKtx = "22.0.4"
+uiText = "1.10.0"
 
 [libraries]
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
@@ -36,6 +37,7 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 protolite-well-known-types = { module = "com.google.protobuf:protolite-well-known-types", version.ref = "protoliteWellKnownTypes" }
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 firebase-perf-ktx = { group = "com.google.firebase", name = "firebase-perf-ktx", version.ref = "firebasePerfKtx" }
+androidx-compose-ui-text = { group = "androidx.compose.ui", name = "ui-text", version.ref = "uiText" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

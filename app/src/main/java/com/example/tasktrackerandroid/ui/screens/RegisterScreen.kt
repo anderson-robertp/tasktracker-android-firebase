@@ -3,19 +3,24 @@ package com.example.tasktrackerandroid.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import com.example.tasktrackerandroid.viewmodel.AuthViewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.example.tasktrackerandroid.viewmodel.AuthState
 
 @Composable
 fun RegisterScreen(
     viewModel: AuthViewModel = hiltViewModel(),
+    navController: NavController,
     onRegisterSuccess: () -> Unit,
     onBackToLogin: () -> Unit
 ) {
-    val uiState by viewModel.authState.collectAsState()
+    val uiState by viewModel.state.collectAsState()
 
     // When registration succeeds, call callback
     LaunchedEffect(uiState.isSuccess) {
@@ -100,7 +105,7 @@ fun RegisterScreen(
 
             // REGISTER BUTTON
             Button(
-                onClick = { viewModel.register() },
+                onClick = { viewModel.register(email = uiState.email, password = uiState.password) },
                 enabled = !uiState.isLoading,
                 modifier = Modifier
                     .fillMaxWidth()

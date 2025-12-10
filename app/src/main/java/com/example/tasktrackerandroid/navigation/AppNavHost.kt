@@ -29,60 +29,68 @@ import com.example.tasktrackerandroid.viewmodel.AuthViewModel
 @Composable
 fun AppNavHost(
     navController: NavHostController,
+    taskViewModel: TaskViewModel,
+    authViewModel: AuthViewModel,
     isLoggedIn: Boolean,
 ) {
     NavHost(
         navController = navController,
         startDestination = if (isLoggedIn) Routes.TASK_LIST else Routes.LOGIN
     ) {
-        // ---------- AUTH ----------
+        // Login
         composable(Routes.LOGIN) {
             LoginScreen(
+                navController = navController,
+                viewModel = authViewModel,
                 onLoginSuccess = {
-                    navController.navigate(Routes.TASK_LIST) {
-                        popUpTo(Routes.LOGIN) { inclusive = true }
-                    }
-                },
-                onRegisterClick = {
-                    navController.navigate(Routes.REGISTER)
+                    navController.navigate(Routes.TASK_LIST) {}
                 }
             )
         }
 
+        // Register
         composable(Routes.REGISTER) {
             RegisterScreen(
+                navController = navController,
+                viewModel = authViewModel,
                 onRegisterSuccess = {
-                    navController.navigate(Routes.TASK_LIST) {
-                        popUpTo(Routes.LOGIN) { inclusive = true }
-                    }
+                    navController.navigate(Routes.TASK_LIST) {}
                 },
-                onBackToLogin = { navController.popBackStack() }
+                onBackToLogin = {
+                    navController.popBackStack()
+                }
+
             )
         }
 
-        // ---------- TASK LIST ----------
+        // Task List
         composable(Routes.TASK_LIST) {
             TaskListScreen(
-                onAddTask = { navController.navigate(Routes.taskEditRoute(-1)) },
-                onTaskClick = { taskId ->
-                    navController.navigate(Routes.taskEditRoute(taskId))
+                navController = navController,
+                viewModel = taskViewModel,
+                onLogout = {
+                    authViewModel.logout()
+                    navController.navigate(Routes.LOGIN) {
+                        popUpTo(Routes.TASK_LIST) { inclusive = true }
+                    }
                 }
             )
         }
 
-        // ---------- TASK EDIT ----------
+        // Task Edit
         composable(
             route = Routes.TASK_EDIT,
             arguments = listOf(navArgument("taskId") { type = NavType.IntType })
-        ) { entry ->
-            val taskId = entry.arguments!!.getInt("taskId")
-
-            TaskEditScreen(
-                taskId = taskId,
-                onSave = {
-                    navController.popBackStack()
-                }
-            )
+        ){ backStackEntry ->
+                val taskId = backStackEntry.arguments?.getInt("taskId") ?: -1
+                TaskEditScreen(
+                    navController = navController,
+                    viewModel = taskViewModel,
+                    taskId = taskId,
+                    onNavigateBack = {
+                        navController.popBackStack()
+                    }
+                )
         }
     }
 }

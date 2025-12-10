@@ -15,6 +15,9 @@ import com.example.tasktrackerandroid.ui.theme.TaskTrackerAndroidV2Theme
 import com.example.tasktrackerandroid.viewmodel.TaskViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.tasktrackerandroid.navigation.AppNavHost
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import com.example.tasktrackerandroid.viewmodel.AuthViewModel
 import com.google.firebase.perf.session.SessionManager
 
 /**
@@ -30,6 +33,9 @@ class MainActivity : ComponentActivity() {
      * across all composables hosted by this activity.
      */
     private val taskViewModel: TaskViewModel by viewModels()
+    private lateinit var sessionManager: SessionManager
+    private val authViewModel: AuthViewModel by viewModels()
+
 
     /**
      * The entry point method called when the activity is first created.
@@ -43,17 +49,17 @@ class MainActivity : ComponentActivity() {
             // The main theme for the app.
             TaskTrackerAndroidV2Theme {
                 // A surface container using the 'background' color from the theme.
-                Surface(
-                        modifier = Modifier.fillMaxSize(),
-                    ) {
-                        // creates a [Scaffold] with a [TaskScreen] as its content.
-                        val navController = rememberNavController()
-                    // Sets up the application's navigation graph, passing the NavController
-                    // and the shared ViewModel to it.
-                        AppNavHost(
-                            navController = navController,
-                            viewModel = taskViewModel
-                        )
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    // creates a [Scaffold] with a [TaskScreen] as its content.
+                    val navController = rememberNavController()
+                    val isLoggedIn by authViewModel.state.collectAsState()
+                    AppNavHost(
+                        navController = navController,
+                        taskViewModel = taskViewModel,
+                        authViewModel = authViewModel,
+                        isLoggedIn = isLoggedIn.isLoggedIn
+                    )
+
                 }
             }
         }
@@ -81,12 +87,4 @@ fun GreetingPreview() {
     TaskTrackerAndroidV2Theme {
         Greeting("Android")
     }
-}
-
-@Composable
-fun TaskTrackerApp(sessionManager: SessionManager) {
-    val navController = rememberNavController()
-    val isLoggedIn by sessionManager.isLoggedIn.collectAsState(initial = false)
-
-    AppNavHost(navController, isLoggedIn)
 }
