@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
 data class Task(
-    val id: Int,
+    val id: String = "",
     var title: String?,
     var isCompleted: Boolean = false
 ){

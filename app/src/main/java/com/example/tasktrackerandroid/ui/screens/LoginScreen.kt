@@ -68,7 +68,7 @@ fun LoginScreen(
         Spacer(Modifier.height(8.dp))
 
         OutlinedButton(
-            onClick = { viewModel.register(email, password) },
+            onClick = { navController.navigate("register") },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Register")

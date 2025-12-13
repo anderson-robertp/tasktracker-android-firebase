@@ -15,8 +15,8 @@ import com.example.tasktrackerandroid.viewmodel.TaskViewModel
 // TaskScreen(viewModel: TaskViewModel)
 fun TaskScreen(
     viewModel: TaskViewModel,
-    editTask: (int: Int) -> Unit,
-    deleteTask: (int: Int) -> Unit,
+    editTask: (string: String) -> Unit,
+    deleteTask: (string: String) -> Unit,
     modifier: Modifier = Modifier
     ) {
     val tasks by viewModel.tasks.collectAsState()

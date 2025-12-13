@@ -17,14 +17,19 @@ import androidx.navigation.compose.rememberNavController
 import com.example.tasktrackerandroid.navigation.AppNavHost
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tasktrackerandroid.viewmodel.AuthViewModel
 import com.google.firebase.perf.session.SessionManager
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * The main and only activity in this single-activity architecture application.
  * It serves as the entry point for the app and hosts all the Jetpack Compose UI content.
  */
-class MainActivity : ComponentActivity() {
+@AndroidEntryPoint
+class MainActivity : ComponentActivity(
+
+) {
 
     /**
      * Lazily initializes the [TaskViewModel].
@@ -32,10 +37,7 @@ class MainActivity : ComponentActivity() {
      * meaning it survives configuration changes (like screen rotation) and is shared
      * across all composables hosted by this activity.
      */
-    private val taskViewModel: TaskViewModel by viewModels()
     private lateinit var sessionManager: SessionManager
-    private val authViewModel: AuthViewModel by viewModels()
-
 
     /**
      * The entry point method called when the activity is first created.
@@ -51,6 +53,8 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme.
                 Surface(modifier = Modifier.fillMaxSize()) {
                     // creates a [Scaffold] with a [TaskScreen] as its content.
+                    val taskViewModel: TaskViewModel = hiltViewModel()
+                    val authViewModel: AuthViewModel = hiltViewModel()
                     val navController = rememberNavController()
                     val isLoggedIn by authViewModel.state.collectAsState()
                     AppNavHost(

@@ -68,19 +68,16 @@ dependencies {
 
     // Firebase
     implementation(platform(libs.firebase.bom))
-    implementation("com.google.firebase:firebase-perf") {
+    implementation("com.google.firebase:firebase-perf"){
         exclude(group = "com.google.api.grpc", module = "proto-google-common-protos")
-        exclude (group = "com.google.firebase", module = "protolite-well-known-types")
     }
     implementation("com.google.firebase:firebase-analytics")
-    implementation(libs.firebase.firestore.ktx) {
+    implementation(libs.firebase.firestore.ktx){
         exclude(group = "com.google.api.grpc", module = "proto-google-common-protos")
         exclude(group = "com.google.protobuf", module = "protobuf-java")
-        exclude (group = "com.google.firebase", module = "protolite-well-known-types")
     }
-    implementation("com.google.firebase:firebase-auth") {
+    implementation("com.google.firebase:firebase-auth"){
         exclude(group = "com.google.api.grpc", module = "proto-google-common-protos")
-        exclude (group = "com.google.firebase", module = "protolite-well-known-types")
     }
 
 
@@ -91,8 +88,6 @@ dependencies {
 
     // Hilt Compose
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-
-    implementation("com.google.api.grpc:proto-google-common-protos:2.40.0")
 
     // Android + Compose
     implementation(libs.androidx.core.ktx)
@@ -120,8 +115,6 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
 
-// Fix protobuf conflicts with Firebase
-configurations.all {
-    exclude(group = "com.google.protobuf", module = "protobuf-java")
-    exclude(group = "com.google.protobuf", module = "protobuf-lite")
+kapt{
+    correctErrorTypes = true
 }

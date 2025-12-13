@@ -8,8 +8,10 @@ import com.example.tasktrackerandroid.TaskList
 import com.example.tasktrackerandroid.TaskProto
 import com.example.tasktrackerandroid.data.datastore.TaskListSerializer
 import com.example.tasktrackerandroid.data.model.Task
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 /**
  * A repository-like class responsible for abstracting the read/write operations
@@ -19,7 +21,9 @@ import kotlinx.coroutines.flow.map
  *
  * @param context The application context, needed to create the DataStore.
  */
-class TaskDataStore(private val context: Context) {
+class TaskDataStore @Inject constructor(
+    @param:ApplicationContext private val context: Context
+) {
 
     /**
      * The actual DataStore instance. It is created using a factory to specify
@@ -41,12 +45,12 @@ class TaskDataStore(private val context: Context) {
         // Map the raw Protobuf TaskList to a more usable List<Task>
         dataStore.data.map { taskList: TaskList ->
             // Convert each TaskProto in the TaskList to a Task object
-            taskList.tasksList.map { taskProto: TaskProto ->
+            taskList.tasksList.map {
                 // Create and return a Task object from the TaskProto
                 Task(
-                    id = taskProto.id,
-                    title = taskProto.title,
-                    isCompleted = taskProto.isCompleted
+                    id = it.id,
+                    title = it.title,
+                    isCompleted = it.isCompleted
                 )
             }
         }
@@ -74,6 +78,12 @@ class TaskDataStore(private val context: Context) {
             }
             // Build the new TaskList and return it
             builder.build()
+        }
+    }
+
+    suspend fun clearTasks() {
+        dataStore.updateData { current ->
+            current.toBuilder().clearTasks().build()
         }
     }
 }

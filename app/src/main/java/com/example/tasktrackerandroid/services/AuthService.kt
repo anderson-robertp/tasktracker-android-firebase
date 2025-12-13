@@ -6,7 +6,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 
-class AuthRepository(
+class AuthService(
     private val auth: FirebaseAuth
 ) {
 

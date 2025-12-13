@@ -4,7 +4,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.example.tasktrackerandroid.data.model.Task
 import kotlinx.coroutines.tasks.await
 
-class FirebaseTaskService {
+class FirebaseTaskServiceOld {
 
     private val db = FirebaseFirestore.getInstance()
     private val tasksRef = db.collection("tasks")
@@ -13,7 +13,7 @@ class FirebaseTaskService {
         tasksRef.document(task.id.toString()).set(task).await()
     }
 
-    suspend fun deleteTask(id: Int) {
+    suspend fun deleteTask(id: String) {
         tasksRef.document(id.toString()).delete().await()
     }
 

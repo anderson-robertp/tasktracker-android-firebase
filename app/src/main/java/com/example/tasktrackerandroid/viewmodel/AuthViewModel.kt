@@ -1,8 +1,9 @@
 package com.example.tasktrackerandroid.viewmodel
 
+import com.example.tasktrackerandroid.data.TaskDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.tasktrackerandroid.services.AuthRepository
+import com.example.tasktrackerandroid.data.auth.AuthRepositoryInterface
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +29,8 @@ data class AuthState(
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authRepo: AuthRepository
+    private val authRepo: AuthRepositoryInterface,
+    private val dataStore: TaskDataStore
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AuthState())
@@ -36,21 +38,19 @@ class AuthViewModel @Inject constructor(
 
 
     init {
-        _state.value = _state.value.copy(
-            isLoggedIn = authRepo.currentUser != null
-        )
+        _state.update { it.copy(isLoggedIn = authRepo.currentUser != null) }
     }
 
     fun onEmailChanged(email: String) {
-        _state.update { it.copy(email = email) }
+        _state.update { it.copy(email = email, emailError = null) }
     }
 
     fun onPasswordChanged(password: String) {
-        _state.update { it.copy(password = password) }
+        _state.update { it.copy(password = password, passwordError = null) }
     }
 
     fun onConfirmPasswordChanged(confirmPassword: String) {
-        _state.update { it.copy(confirmPassword = confirmPassword) }
+        _state.update { it.copy(confirmPassword = confirmPassword, confirmPasswordError = null) }
     }
 
     fun login(email: String, password: String) {
@@ -73,11 +73,11 @@ class AuthViewModel @Inject constructor(
         val state = _state.value
 
         // Validate
-        if (!state.email.isBlank()) {
+        if (state.email.isBlank()) {
             _state.update { it.copy(emailError = "Email cannot be empty") }
             return
         }
-        if (!state.password.isBlank()) {
+        if (state.password.isBlank()) {
             _state.update { it.copy(passwordError = "Password cannot be empty") }
             return
         }
@@ -90,6 +90,7 @@ class AuthViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true, error = null) }
 
             val result = authRepo.register(email, password)
+
             _state.update {
                 if (result.isSuccess) {
                     it.copy(isLoading = false, isLoggedIn = true)
@@ -102,6 +103,9 @@ class AuthViewModel @Inject constructor(
 
     fun logout() {
         authRepo.logout()
+        viewModelScope.launch {
+            dataStore.clearTasks()
+        }
         _state.update { it.copy(isLoggedIn = false) }
     }
 }

@@ -3,11 +3,15 @@ package com.example.tasktrackerandroid.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.tasktrackerandroid.viewmodel.TaskStatus
 import com.example.tasktrackerandroid.viewmodel.TaskViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -20,6 +24,7 @@ fun TaskListScreen(
 ) {
 
     val tasks by viewModel.tasks.collectAsState()
+    val taskStatus by viewModel.taskStatus.collectAsState()
     var newTaskTitle by remember { mutableStateOf("") }
 
     val onAddTaskClick: () -> Unit = {
@@ -29,9 +34,35 @@ fun TaskListScreen(
         }
     }
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(taskStatus) {
+        when (taskStatus) {
+            is TaskStatus.Success -> {
+                snackbarHostState.showSnackbar("Task added successfully")
+                viewModel.resetStatus()
+            }
+
+            is TaskStatus.Error -> {
+                val message = (taskStatus as TaskStatus.Error).message
+                snackbarHostState.showSnackbar(message)
+                viewModel.resetStatus()
+            }
+
+            else -> {}
+        }
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            TopAppBar(title = { Text("Task Tracker") })
+            TopAppBar(
+                title = { Text("Task Tracker") },
+                actions = {
+                    IconButton(onClick = onLogout) {
+                        Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Logout")
+                    }
+                }
+            )
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(

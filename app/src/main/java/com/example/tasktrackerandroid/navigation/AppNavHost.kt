@@ -82,7 +82,8 @@ fun AppNavHost(
             route = Routes.TASK_EDIT,
             arguments = listOf(navArgument("taskId") { type = NavType.IntType })
         ){ backStackEntry ->
-                val taskId = backStackEntry.arguments?.getInt("taskId") ?: -1
+                val taskId = backStackEntry.arguments?.getString("taskId")
+                requireNotNull(taskId) { "Task ID is required" }
                 TaskEditScreen(
                     navController = navController,
                     viewModel = taskViewModel,

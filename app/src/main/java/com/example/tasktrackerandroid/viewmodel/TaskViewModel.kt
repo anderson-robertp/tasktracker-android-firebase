@@ -1,18 +1,30 @@
 package com.example.tasktrackerandroid.viewmodel
 
 // Imports
-import android.app.Application
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.example.tasktrackerandroid.data.TaskDataStore
 import com.example.tasktrackerandroid.data.model.Task
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import com.example.tasktrackerandroid.data.TaskRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import com.example.tasktrackerandroid.data.FirebaseTaskService
-import com.example.tasktrackerandroid.data.TaskRepositoryDB
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
-
+sealed class TaskStatus {
+    object Loading : TaskStatus()
+    data class Success(val tasks: List<Task>) : TaskStatus()
+    object Idle : TaskStatus()
+    data class Error(val message: String) : TaskStatus()
+}
 /**
  * The ViewModel for the task tracker application.
  * It extends AndroidViewModel to get access to the application context, which is needed
@@ -21,118 +33,96 @@ import com.example.tasktrackerandroid.data.TaskRepositoryDB
  *
  * @param app The application context, provided by the AndroidViewModel superclass.
  */
-class TaskViewModel(app: Application, private val repository: TaskRepositoryDB) : AndroidViewModel(app) {
-    // Private instance of the Datastore repository
-    private val dataStore = TaskDataStore(app)
-    // Mutable state flow for the list of tasks
+@HiltViewModel
+class TaskViewModel @Inject constructor(
+    private val repository: TaskRepository
+) : ViewModel() {
+
     private val _tasks = MutableStateFlow<List<Task>>(emptyList())
-    // Public immutable state flow for the list of tasks
-    val tasks: StateFlow<List<Task>> = _tasks
-    // Counter for generating unique task IDs
-    private var nextId: Int = 1
-    // Firebase
-    private val remote = FirebaseTaskService()
+    val tasks: StateFlow<List<Task>> = _tasks.asStateFlow()
 
-    /**
-     * The init block is executed when the ViewModel is first created.
-     * It launches a coroutine to collect the flow of tasks from the DataStore
-     * and update the local UI state.
-     */
+    private val _taskStatus = MutableStateFlow<TaskStatus>(TaskStatus.Idle)
+    val taskStatus: StateFlow<TaskStatus> = _taskStatus.asStateFlow()
+
+
     init {
-        repository.startSync()
-        viewModelScope.launch {
-            dataStore.tasksFlow.collect { loaded ->
-                _tasks.value = loaded
-                nextId = loaded.maxOfOrNull { it.id }?.plus(1) ?: 1
-            }
-            val tasks = remote.getAllTasks()
-            if (tasks.isNotEmpty()) {
-                updateTasks(tasks)
-            }
-        }
-
+        observeTasks()
     }
 
-    /**
-     * A private helper function to centralize the logic for updating the task list.
-     * It updates both the local UI state and persists the changes to the DataStore.
-     *
-     * @param tasks The new, updated list of tasks.
-     */
-    private fun updateTasks(tasks: List<Task>) {
-        _tasks.value = tasks
+    private fun observeTasks() {
         viewModelScope.launch {
-            dataStore.saveTasks(tasks)
+            repository.tasks().collect { tasks ->
+                _tasks.value = tasks
+            }
         }
     }
 
-    // Public functions
-    /**
-     * Adds a new task to the list.
-     *
-     * @param title The title of the new task.
-     */
+
     fun addTask(title: String) {
-        val newId = (tasks.value.maxOfOrNull { it.id } ?: 0) + 1
-        val newTask = Task(id = newId, title = title)
-        updateTasks(tasks.value + newTask)
-
+        val newTask = Task(
+            id = "",
+            title = title,
+            isCompleted = false
+        )
         viewModelScope.launch {
-            remote.uploadTask(newTask)
-        }
-    }
-
-    /**
-     * Toggles the completion status of a specific task.
-     *
-     * @param id The unique ID of the task to toggle.
-     */
-    fun toggleTaskComplete(id: Int) {
-        val updated = tasks.value.map {
-            if (it.id == id) {
-                val updatedTask = it.copy(isCompleted = !it.isCompleted)
-                viewModelScope.launch {
-                    remote.updateTask(updatedTask)
-                }
-                updatedTask
+            _taskStatus.value = TaskStatus.Loading
+            try {
+                repository.addTask(newTask)
+                _taskStatus.value = TaskStatus.Success(tasks.value + newTask)
+        } catch (e: Exception) {
+                _taskStatus.value = TaskStatus.Error(e.message ?: "Unknown error")
             }
-            else it
         }
-        updateTasks(updated)
+        Log.d("TaskViewModel","Task added: $title")
     }
 
-    /**
-     * Edits the title of a specific task.
-     *
-     * @param id The unique ID of the task to edit.
-     * @param newTitle The new title for the task.
-     */
-    fun editTask(id: Int, newTitle: String?) {
-        // FIX 1.1: Use a different variable name ('updatedTasks')
-        val updatedTasks = tasks.value.map {
-            if (it.id == id) {
-                val updatedTask = it.copy(title = newTitle)
-                viewModelScope.launch {
-                    remote.updateTask(updatedTask)
-                }
-                updatedTask
-            }
-            else it
-        }
-        // FIX 1.2: Pass the correct variable to 'saveTasks'
-        updateTasks(updatedTasks)
-    }
-
-    /**
-     * Deletes a task from the list.
-     *
-     * @param id The unique ID of the task to delete.
-     */
-    fun deleteTask(id: Int) {
-        val remainingTasks = tasks.value.filterNot { it.id == id }
-        updateTasks(remainingTasks)
+    fun editTask(taskId: String, newTitle: String?) {
         viewModelScope.launch {
-            remote.deleteTask(id)
+            try{
+                repository.editTask(taskId, newTitle)
+            } catch (e: Exception) {
+                _taskStatus.value = TaskStatus.Error(e.message ?: "Unknown error")
+            }
+        }
+        Log.d("TaskViewModel","Task edited: $taskId")
+    }
+
+    fun deleteTask(taskId: String) {
+        viewModelScope.launch {
+            try {
+                repository.deleteTask(taskId)
+                Log.d("TaskViewModel","Task deleted: $taskId")
+            } catch (e: Exception) {
+                _taskStatus.value = TaskStatus.Error(e.message ?: "Unknown error")
+            }
         }
     }
+
+    fun toggleTaskComplete(taskId: String) {
+        viewModelScope.launch {
+            try{
+                val task = _tasks.value.find { it.id == taskId }?: return@launch
+                repository.toggleTaskComplete(taskId, !task.isCompleted)
+            } catch (e: Exception) {
+                _taskStatus.value = TaskStatus.Error(e.message ?: "Unknown error")
+            }
+        }
+        Log.d("TaskViewModel","Task toggled: $taskId")
+    }
+
+
+    /**
+     * Returns a Flow that emits a single task matching the given taskId.
+     * This is more efficient than observing the entire list on the UI when only one task is needed.
+     */
+    fun getTask(taskId: String): Flow<Task?> {
+        return tasks.map { tasks ->
+            tasks.find { it.id == taskId }
+        }
+    }
+
+    fun resetStatus() {
+        _taskStatus.value = TaskStatus.Idle
+    }
+
 }

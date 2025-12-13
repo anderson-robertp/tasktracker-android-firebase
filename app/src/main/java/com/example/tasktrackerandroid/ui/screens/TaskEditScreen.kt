@@ -23,7 +23,7 @@ import androidx.navigation.NavController
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskEditScreen(
-    taskId: Int,
+    taskId: String,
     navController: NavController,
     viewModel: TaskViewModel,
     onNavigateBack: () -> Unit,
@@ -32,7 +32,7 @@ fun TaskEditScreen(
     // Collect the list of tasks as state from the ViewModel.
     // `collectAsState` ensures that the Composable recomposes whenever the task list changes.
     // Then, find the specific task that matches the provided `taskId`.
-    val task = viewModel.tasks.collectAsState().value.find { it.id == taskId }
+    val task by viewModel.getTask(taskId).collectAsState(initial = null)
 
     // If the task is not found (e.g., it was deleted), display a message and stop rendering.
     if (task == null) {
@@ -41,8 +41,8 @@ fun TaskEditScreen(
     }
     // Create a mutable state for the task details.
     // These states are initialized with the task's current values and can be updated by the UI.
-    var updatedTitle by remember { mutableStateOf(task.title) }
-    var updatedCompleted by remember { mutableStateOf(task.isCompleted) }
+    var updatedTitle by remember { mutableStateOf(task!!.title) }
+    var updatedCompleted by remember { mutableStateOf(task!!.isCompleted) }
 
     // Create a scaffold with a top bar and content
     Scaffold(
@@ -93,7 +93,7 @@ fun TaskEditScreen(
             Button(
                 onClick = {
                     viewModel.editTask(taskId, updatedTitle)
-                    if (updatedCompleted != task.isCompleted)
+                    if (updatedCompleted != task!!.isCompleted)
                         viewModel.toggleTaskComplete(taskId)
                     onNavigateBack()
                 },
@@ -120,3 +120,4 @@ fun TaskEditScreen(
         }
     }
 }
+
