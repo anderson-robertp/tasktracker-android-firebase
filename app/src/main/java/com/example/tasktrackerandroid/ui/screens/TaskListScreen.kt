@@ -22,6 +22,9 @@ fun TaskListScreen(
     navController: NavController,
     onLogout: () -> Unit
 ) {
+    LaunchedEffect("tasks") {
+        viewModel.startObservingTasks()
+    }
 
     val tasks by viewModel.tasks.collectAsState()
     val taskStatus by viewModel.taskStatus.collectAsState()

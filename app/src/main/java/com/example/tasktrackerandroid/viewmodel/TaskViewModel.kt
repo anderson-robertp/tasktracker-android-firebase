@@ -3,6 +3,7 @@ package com.example.tasktrackerandroid.viewmodel
 // Imports
 import android.content.ContentValues.TAG
 import android.util.Log
+import androidx.compose.ui.window.isPopupLayout
 import androidx.lifecycle.viewModelScope
 import com.example.tasktrackerandroid.data.model.Task
 import kotlinx.coroutines.flow.StateFlow
@@ -12,11 +13,8 @@ import com.example.tasktrackerandroid.data.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 sealed class TaskStatus {
@@ -44,9 +42,16 @@ class TaskViewModel @Inject constructor(
     private val _taskStatus = MutableStateFlow<TaskStatus>(TaskStatus.Idle)
     val taskStatus: StateFlow<TaskStatus> = _taskStatus.asStateFlow()
 
+    private var isObserving = false
 
-    init {
+    fun startObservingTasks() {
+        if (isObserving) return
+        isObserving = true
         observeTasks()
+    }
+
+    fun stopObservingTasks() {
+        isObserving = false
     }
 
     private fun observeTasks() {
@@ -124,5 +129,4 @@ class TaskViewModel @Inject constructor(
     fun resetStatus() {
         _taskStatus.value = TaskStatus.Idle
     }
-
 }

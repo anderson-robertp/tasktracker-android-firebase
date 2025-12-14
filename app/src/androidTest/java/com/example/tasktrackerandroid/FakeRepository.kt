@@ -5,14 +5,16 @@ import com.example.tasktrackerandroid.data.model.Task
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.UUID
-import java.util.concurrent.Flow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 class FakeTaskRepository : TaskRepository {
 
     private val _tasks = MutableStateFlow<List<Task>>(emptyList())
 
     override fun tasks(): Flow<List<Task>> = _tasks
-    override fun observeTasks(): kotlinx.coroutines.flow.Flow<List<Task>> {
+    override fun observeTasks(): Flow<List<Task>> {
         TODO("Not yet implemented")
     }
 
@@ -20,8 +22,9 @@ class FakeTaskRepository : TaskRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun addTask(task: Task) {
-        _tasks.value = _tasks.value + task.copy(id = UUID.randomUUID().toString())
+    override suspend fun addTask(task: Task): Result<Unit> {
+        _tasks.value += task.copy(id = UUID.randomUUID().toString())
+        return Result.success(Unit)
     }
 
     override suspend fun editTask(taskId: String, newTitle: String?) {

@@ -10,7 +10,7 @@ This project uses Firebase Realtime Database for cloud persistence and Firebase 
 
 The database is synchronized with local Proto DataStore so the app continues functioning offline and re-syncs when the device reconnects.
 
-[Software Demo Video](https://youtu.be/xRHznMYy9Gs)
+[Software Demo Video](https://youtu.be/YfKzbRNoNRs)
 
 # Development Environment
 
