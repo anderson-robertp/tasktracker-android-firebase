@@ -65,15 +65,16 @@ class FirebaseTaskService @Inject constructor(
 
     override suspend fun addTask(task: Task): Result<Unit> {
         return try {
-            val userId = auth.currentUser?.uid
-            ?: throw IllegalStateException("User not logged in")
+            val userId = userId()
 
-        db.collection("users")
-            .document(userId)
-            .collection("tasks")
-            .add(task)
-            .await()
-        Log.d("FirebaseTaskService", "Task added: $task")
+            val docRef = db.collection("users")
+                .document(userId)
+                .collection("tasks")
+                .document()
+            val taskWithId = task.copy(id = docRef.id)
+
+            docRef.set(taskWithId).await()
+            Log.d("FirebaseTaskService", "Task added: $task")
             Result.success(Unit)
         }
         catch (e: Exception) {

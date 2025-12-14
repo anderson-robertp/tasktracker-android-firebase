@@ -80,7 +80,7 @@ fun AppNavHost(
         // Task Edit
         composable(
             route = Routes.TASK_EDIT,
-            arguments = listOf(navArgument("taskId") { type = NavType.IntType })
+            arguments = listOf(navArgument("taskId") { type = NavType.StringType })
         ){ backStackEntry ->
                 val taskId = backStackEntry.arguments?.getString("taskId")
                 requireNotNull(taskId) { "Task ID is required" }
